@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titile %}{% endblock titile %}</title>
+
+    <link rel="stylesheet" href="{% static 'chat/inbox/css/bootstrap.min.css' %}">
+    <script src="{% static 'chat/inbox/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'chat/inbox/js/jquery-3.3.1.slim.min.js' %}"></script>
+
+</head>
+
+<body style="background-color: #74EBD5;
+             background-image: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
+             min-height: 100vh;">
+
+<nav class="navbar navbar-light bg-light">
+    <span>Hello, {{request.user.username}}</span>
+    <span class="navbar-text float-right">
+      <a href="{% url 'chat:logout' %}">Log out</a>
+    </span>
+  </nav>
+
+    <div class="container py-5 px-4">
+
+        {% block content %}
+        {% endblock content %}
+
+    </div>
+</body>
+
+</html>

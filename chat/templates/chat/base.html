@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  {% if request.user.is_authenticated %}
+  <nav class="navbar navbar-light bg-light right pr-30">
+    <a class="navbar-brand" href="{% url 'chat:logout' %}">Log out</a>
+  </nav>
+  {% endif %}
+
+  {% block messages %}
+  {% if messages %}
+  {% for message in messages %}
+  <div class="{{ message.tags }}" id="infomessage">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endblock messages %}
+
+  {% block content %}
+  {% endblock content %}
+</head>
+
+</html>

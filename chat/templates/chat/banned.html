@@ -1,0 +1,20 @@
+{% extends 'chat/form_base.html' %}
+{% load static %}
+
+{% block title %}Banned{% endblock title %}
+
+{% block content %}
+
+<div class="wrap-login110">
+	<span class="login100-form-title">
+		You has been banned, sorry.<br><br>
+		You can create another account.
+	</span>
+	<div class="container-login100-form-btn">
+		<a class="login100-form-btn" href="{% url 'chat:register' %}">
+			Register
+		</a>
+	</div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,146 @@
+{% extends 'chat/chat_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="row rounded-lg overflow-hidden shadow">
+	<!-- Chat Box-->
+	<div class="col-7 px-0 mb-5" style="position: relative; width: 100%;">
+		<div class="chat-header mb-0 p-2 bg-white">
+			<div class="header-details">
+				<h5 class="user-icon">{{ interlocutor }}</h5>
+			</div>
+		</div>
+		<div id="chat-log" class="px-4 py-5 chat-box bg-white" style="height: 600px; overflow: auto;">
+
+			{% for msg in history %}
+			{% if msg.sender.username == request.user.username %}
+
+			<!-- Reciever Message-->
+			<div class="media w-50 ml-auto mb-3">
+				<div class="media-body">
+					<div class="bg-primary rounded py-2 px-3 mb-2">
+						<p class="text-small mb-0 text-white">{{ msg.content }}</p>
+					</div>
+					<p class="small text-muted">{{ msg.date }}</p>
+				</div>
+			</div>
+
+			{% else %}
+
+			<!-- Sender Message-->
+			<div class="media w-50 mb-3">
+				<div class="media-body">
+					<div class="bg-light rounded py-2 px-3 mb-2">
+						<p class="text-small mb-0 text-muted">{{ msg.content }}</p>
+					</div>
+					<p class="small text-muted">{{ msg.date }}</p>
+				</div>
+			</div>
+
+			{% endif %}
+			{% endfor %}
+
+		</div>
+
+		<!-- Typing area -->
+			<div class="input-group">
+				<input id="chat-message-input" type="text" placeholder="Type a message" aria-describedby="button-addon2"
+					class="form-control rounded-0 border-0 py-4 bg-light">
+				<div class="input-group-append">
+					<button id="chat-message-submit" type="submit" class="btn btn-link"><img
+							src="{% static 'chat/inbox/images/fly-send.svg' %}" width="30"></button>
+				</div>
+			</div>
+
+	</div>
+</div>
+
+<script src="{% static 'chat/inbox/js/reconnecting-websocket.js' %}"></script>
+
+<script>
+	const roomName = {{ room_id }};
+	const username = '{{ request.user.username }}';
+
+	const chatSocket = new ReconnectingWebSocket(
+		'wss://'
+		+ window.location.host
+		+ '/ws/chat/'
+		+ roomName
+		+ '/'
+	);
+
+	chatSocket.onmessage = function (e) {
+		const data = JSON.parse(e.data);
+
+		var message = data.message;
+		var sender = data.sender;
+		var date = data.date;
+
+		var newMsg = document.createElement('div');
+
+		if (sender === username) {
+			newMsg.className = 'media w-50 ml-auto mb-3';
+			
+		} else {
+			newMsg.className = 'media w-50 mb-3';
+		}
+
+		var msgMedia = document.createElement('div');
+		msgMedia.className = 'media-body';
+
+		var msgBody = document.createElement('div');
+
+		if (sender === username) {
+			msgBody.className = 'bg-primary rounded py-2 px-3 mb-2';
+		} else {
+			msgBody.className = 'bg-light rounded py-2 px-3 mb-2';
+		}
+
+		var msgText = document.createElement('p');
+			msgText.className = 'text-small mb-0 text-white';
+		if (sender === username) {
+		} else {
+			msgText.className = 'text-small mb-0 text-muted';
+		}
+
+		var msgTime = document.createElement('p');
+		msgTime.className = 'small text-muted';
+		
+		msgTime.textContent = date;
+		msgText.textContent = message;
+		
+
+		msgBody.appendChild(msgText);
+		msgMedia.appendChild(msgBody);
+		msgMedia.appendChild(msgTime);
+		newMsg.appendChild(msgMedia);
+
+		document.querySelector('#chat-log').appendChild(newMsg);
+	};
+
+	chatSocket.onclose = function (e) {
+		console.error('Chat socket closed unexpectedly');
+	};
+
+	document.querySelector('#chat-message-input').focus();
+	document.querySelector('#chat-message-input').onkeyup = function (e) {
+		if (e.keyCode === 13) {  // enter, return
+			document.querySelector('#chat-message-submit').click();
+		}
+	};
+
+	document.querySelector('#chat-message-submit').onclick = function (e) {
+			const messageInputDom = document.querySelector('#chat-message-input');
+			const message = messageInputDom.value;
+			if(message !== null && message !== '') {
+				chatSocket.send(JSON.stringify({
+					'message': message,
+					'sender': username,
+				}));
+			messageInputDom.value = '';
+			}
+	};
+</script>
+
+{% endblock content %}

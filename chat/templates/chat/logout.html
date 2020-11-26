@@ -1,0 +1,30 @@
+{% extends 'chat/form_base.html' %}
+{% load static %}
+
+{% block title %}Log out{% endblock title %}
+
+{% block content %}
+
+<div class="wrap-login100">
+	<div class="login100-pic js-tilt" data-tilt>
+		<img src="{% static 'chat/forms/images/img-01.png' %}" alt="IMG">
+	</div>
+
+	<span class="login100-form-title">
+		Log out
+	</span>
+
+	<div class="container-login100-form-btn">
+		<a class="login100-form-btn" href="{% url 'chat:login' %}">
+			Log in
+		</a>
+	</div>
+
+	<div class="container-login100-form-btn">
+		<a class="login100-form-btn" href="{% url 'chat:register' %}">
+			Register
+		</a>
+	</div>
+</div>
+
+{% endblock content %}
