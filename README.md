@@ -2,7 +2,7 @@
 
 A web chat created with Django Channels.
 
-How it looks like:
+What it looks like:
 
 ![](https://media.giphy.com/media/Dgti7jdcNPdrJgK6B4/giphy.gif)
 
