@@ -2,22 +2,38 @@
 {% load static %}
 {% load chat_tags %}
 
+{% block titile %}Contacts{% endblock titile %}
+
 {% block content %}
 
 <!-- Search form -->
-<form class="form-inline d-flex justify-content-center md-form form-sm mt-0">
-  <input class="form-control form-control-sm m-5 w-50" name="username" type="text" placeholder="Search for a user"
-    aria-label="Search for a user">
-  {% if form.username.errors %}
-  {{ form.username.errors }}
-  {% endif %}
+<div class="form-inline d-flex justify-content-center md-form form-sm mt-0">
+  <form method="get" action="{% url 'chat:user_search' %}">
+    {% if error_message %}
+    <div class="alert alert-danger">
+      <strong>{{ error_message }}</strong>
+    </div>
+    {% endif %}
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}
+    <div class="alert alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endfor %}
 
-  {% if error_message %}
-  <ul>
-    <li>{{ error_message }}</li>
-  </ul>
-  {% endif %}
-</form>
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+      <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    <a href="{% url 'chat:index' %}">To my contacts</a>
+    {% endif %}
+    <input class="form-control form-control-sm m-5 w-50" name="username" type="text" placeholder="Search for a user"
+      aria-label="Search for a user">
+  </form>
+</div>
 
 <div class="row rounded-lg overflow-hidden shadow">
   <!-- Users box-->
@@ -30,19 +46,16 @@
           <!--Read-->
           <a href="{% url 'chat:chat' msg.room_id %}"
             class="list-group-item list-group-item-action list-group-item-light rounded-0">
-            <div class="media"><img src="{% static 'chat/inbox/images/5.jpg' %}" alt="user" width="50"
-                class="rounded-circle">
-              <div class="media-body ml-4">
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                  {% show_interlocutor_name room_id=msg.room_id user_id=request.user.pk as interlocutor %}
-                  <h6 class="mb-0">{{ interlocutor }}</h6><small class="small font-weight-bold">{{ msg.date }}</small>
-                </div>
-                {% if request.user.pk == msg.sender.pk %}
-                <p class="font-italic mb-0 text-small"><span>You: </span>{{ msg.content }}</p>
-                {% else %}
-                <p class="font-italic mb-0 text-small">{{ msg.content }}</p>
-                {% endif %}
+            <div class="media-body ml-4">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                {% show_interlocutor_name room_id=msg.room_id user_id=request.user.pk as interlocutor %}
+                <h6 class="mb-0">{{ interlocutor }}</h6><small class="small font-weight-bold">{{ msg.date }}</small>
               </div>
+              {% if request.user.pk == msg.sender.pk %}
+              <p class="font-italic mb-0 text-small"><span>You: </span>{{ msg.content }}</p>
+              {% else %}
+              <p class="font-italic mb-0 text-small">{{ msg.content }}</p>
+              {% endif %}
             </div>
           </a>
           {% endfor %}
